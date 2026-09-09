@@ -4,6 +4,7 @@ import type { WindowState } from "../../types";
 import { useWindowStore } from "../../stores/useWindowStore";
 import { getApp } from "../../apps/registry";
 import { cx } from "../../lib/helpers";
+import { playSound } from "../../lib/sound";
 import "./Window.css";
 
 const RESIZE_DIRS = ["n", "s", "e", "w", "ne", "nw", "se", "sw"] as const;
@@ -98,13 +99,11 @@ export function Window({ win }: { win: WindowState }) {
   return (
     <div
       className={cx("window", win.id === focusedId && "window--focused", win.isMaximized && "window--maximized")}
-      style={{
-        left: win.x,
-        top: win.y,
-        width: win.width,
-        height: win.height,
-        zIndex: win.zIndex,
-      }}
+      style={
+        win.isMaximized
+          ? { left: 0, top: 0, width: "100vw", height: "calc(100vh - var(--taskbar-height))", zIndex: win.zIndex }
+          : { left: win.x, top: win.y, width: win.width, height: win.height, zIndex: win.zIndex }
+      }
       onMouseDown={() => focusWindow(win.id)}
     >
       <div
@@ -133,7 +132,7 @@ export function Window({ win }: { win: WindowState }) {
           </button>
           <button
             className="window__btn window__btn--close"
-            onClick={(e) => { e.stopPropagation(); closeWindow(win.id); }}
+            onClick={(e) => { e.stopPropagation(); playSound("close"); closeWindow(win.id); }}
           >
             <Icons.X size={14} />
           </button>

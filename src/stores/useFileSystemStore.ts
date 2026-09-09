@@ -34,11 +34,25 @@ function makeNode(
   };
 }
 
+const SYSTEM_APP_FILES: [string, string][] = [
+  ["File Explorer.app", "file-explorer"],
+  ["Text Editor.app", "text-editor"],
+  ["Terminal.app", "terminal"],
+  ["Calculator.app", "calculator"],
+  ["Settings.app", "settings"],
+  ["Browser.app", "browser"],
+  ["About Me.app", "about-me"],
+  ["Paint.app", "paint"],
+  ["Clock.app", "clock"],
+  ["Task Manager.app", "task-manager"],
+];
+
 function buildSeed(): { nodes: Record<string, FsNode>; rootId: string } {
   const root = makeNode("/", "folder", null);
   const desktop = makeNode("Desktop", "folder", root.id);
   const documents = makeNode("Documents", "folder", root.id);
   const pictures = makeNode("Pictures", "folder", root.id);
+  const systemApps = makeNode("System Apps", "folder", root.id);
   const aboutMe = makeNode(
     "About Me.txt",
     "file",
@@ -58,12 +72,26 @@ function buildSeed(): { nodes: Record<string, FsNode>; rootId: string } {
     "- [ ] Star this repo\n- [ ] Hire this developer\n- [x] Build a cool OS",
   );
 
-  const all = [root, desktop, documents, pictures, aboutMe, readme, todo];
+  // System app shortcuts (.app files contain the appId)
+  const appFiles = SYSTEM_APP_FILES.map(([name, content]) =>
+    makeNode(name, "file", systemApps.id, content),
+  );
+
+  const all = [
+    root, desktop, documents, pictures, systemApps, aboutMe, readme, todo,
+    ...appFiles,
+  ];
   const nodes: Record<string, FsNode> = {};
   for (const node of all) {
     nodes[node.id] = node;
   }
   return { nodes, rootId: root.id };
+}
+
+function hasSiblingName(nodes: Record<string, FsNode>, parentId: string, name: string, excludeId?: string): boolean {
+  return Object.values(nodes).some(
+    (n) => n.parentId === parentId && n.name === name && n.id !== excludeId,
+  );
 }
 
 function collectDescendants(nodes: Record<string, FsNode>, id: string): string[] {
@@ -99,6 +127,8 @@ export const useFileSystemStore = create<FsState>()(
       getNode: (id: string) => get().nodes[id],
 
       createNode: (parentId: string, name: string, type: NodeType, content?: string) => {
+        const { nodes } = get();
+        if (hasSiblingName(nodes, parentId, name)) return "";
         const node = makeNode(name, type, parentId, content);
         set((state) => ({
           nodes: { ...state.nodes, [node.id]: node },
@@ -110,6 +140,7 @@ export const useFileSystemStore = create<FsState>()(
         set((state) => {
           const existing = state.nodes[id];
           if (!existing) return state;
+          if (existing.parentId && hasSiblingName(state.nodes, existing.parentId, newName, id)) return state;
           return {
             nodes: {
               ...state.nodes,
@@ -148,6 +179,7 @@ export const useFileSystemStore = create<FsState>()(
         set((state) => {
           const existing = state.nodes[id];
           if (!existing || id === state.rootId) return state;
+          if (hasSiblingName(state.nodes, newParentId, existing.name, id)) return state;
           return {
             nodes: {
               ...state.nodes,
@@ -174,7 +206,32 @@ export const useFileSystemStore = create<FsState>()(
     }),
     {
       name: "webos-filesystem",
+      version: 3,
       partialize: (state) => ({ nodes: state.nodes, rootId: state.rootId }),
+      migrate: (persisted: unknown, version: number) => {
+        const state = persisted as { nodes: Record<string, FsNode>; rootId: string };
+        if (version < 3) {
+          // ensure the System Apps folder exists
+          let sysFolder = Object.values(state.nodes).find(
+            (n) => n.parentId === state.rootId && n.type === "folder" && n.name === "System Apps",
+          );
+          if (!sysFolder) {
+            sysFolder = makeNode("System Apps", "folder", state.rootId);
+            state.nodes[sysFolder.id] = sysFolder;
+          }
+          // add any app shortcuts that are missing
+          for (const [name, content] of SYSTEM_APP_FILES) {
+            const exists = Object.values(state.nodes).some(
+              (n) => n.parentId === sysFolder!.id && n.name === name,
+            );
+            if (!exists) {
+              const appNode = makeNode(name, "file", sysFolder.id, content);
+              state.nodes[appNode.id] = appNode;
+            }
+          }
+        }
+        return state;
+      },
     },
   ),
 );

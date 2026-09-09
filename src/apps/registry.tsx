@@ -1,19 +1,21 @@
-import type { AppDefinition, AppId, AppProps } from "../types";
+import type { AppDefinition, AppId } from "../types";
 import { Calculator } from "./Calculator/Calculator";
 import { TextEditor } from "./TextEditor/TextEditor";
-
-const Placeholder = ({}: AppProps) => (
-  <div style={{ padding: 20, color: "var(--color-text-dim)" }}>
-    Coming soon…
-  </div>
-);
+import { FileExplorer } from "./FileExplorer/FileExplorer";
+import { Terminal } from "./Terminal/Terminal";
+import { Settings } from "./Settings/Settings";
+import { MiniBrowser } from "./MiniBrowser/MiniBrowser";
+import { AboutMe } from "./AboutMe/AboutMe";
+import { Paint } from "./Paint/Paint";
+import { Clock } from "./Clock/Clock";
+import { TaskManager } from "./TaskManager/TaskManager";
 
 export const appRegistry: Record<AppId, AppDefinition> = {
   "file-explorer": {
     id: "file-explorer",
     name: "File Explorer",
     icon: "Folder",
-    component: Placeholder,
+    component: FileExplorer,
     defaultWidth: 720,
     defaultHeight: 480,
     minWidth: 480,
@@ -33,7 +35,7 @@ export const appRegistry: Record<AppId, AppDefinition> = {
     id: "terminal",
     name: "Terminal",
     icon: "TerminalSquare",
-    component: Placeholder,
+    component: Terminal,
     defaultWidth: 640,
     defaultHeight: 400,
     minWidth: 380,
@@ -44,17 +46,17 @@ export const appRegistry: Record<AppId, AppDefinition> = {
     name: "Calculator",
     icon: "Calculator",
     component: Calculator,
-    defaultWidth: 300,
-    defaultHeight: 440,
-    minWidth: 260,
-    minHeight: 380,
+    defaultWidth: 320,
+    defaultHeight: 500,
+    minWidth: 280,
+    minHeight: 440,
     singleInstance: true,
   },
   "settings": {
     id: "settings",
     name: "Settings",
     icon: "Settings",
-    component: Placeholder,
+    component: Settings,
     defaultWidth: 640,
     defaultHeight: 480,
     minWidth: 480,
@@ -65,7 +67,7 @@ export const appRegistry: Record<AppId, AppDefinition> = {
     id: "browser",
     name: "Browser",
     icon: "Globe",
-    component: Placeholder,
+    component: MiniBrowser,
     defaultWidth: 900,
     defaultHeight: 600,
     minWidth: 520,
@@ -75,10 +77,42 @@ export const appRegistry: Record<AppId, AppDefinition> = {
     id: "about-me",
     name: "About Me",
     icon: "User",
-    component: Placeholder,
+    component: AboutMe,
     defaultWidth: 560,
     defaultHeight: 520,
     minWidth: 380,
+    minHeight: 320,
+    singleInstance: true,
+  },
+  "paint": {
+    id: "paint",
+    name: "Paint",
+    icon: "Paintbrush",
+    component: Paint,
+    defaultWidth: 860,
+    defaultHeight: 580,
+    minWidth: 520,
+    minHeight: 400,
+  },
+  "clock": {
+    id: "clock",
+    name: "Clock",
+    icon: "Clock",
+    component: Clock,
+    defaultWidth: 380,
+    defaultHeight: 540,
+    minWidth: 320,
+    minHeight: 420,
+    singleInstance: true,
+  },
+  "task-manager": {
+    id: "task-manager",
+    name: "Task Manager",
+    icon: "Activity",
+    component: TaskManager,
+    defaultWidth: 560,
+    defaultHeight: 440,
+    minWidth: 440,
     minHeight: 320,
     singleInstance: true,
   },
