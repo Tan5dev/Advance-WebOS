@@ -1,0 +1,146 @@
+.window {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-window);
+  min-width: 240px;
+  min-height: 160px;
+}
+
+.window--focused {
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.6);
+  border-color: rgba(108, 92, 231, 0.5);
+}
+
+.window--maximized {
+  border-radius: 0;
+  border: none;
+}
+
+.window__titlebar {
+  height: var(--titlebar-height);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--space-2) 0 var(--space-3);
+  background: var(--color-titlebar);
+  cursor: move;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.window__title-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.window__controls {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.window__btn {
+  width: 30px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+}
+
+.window__btn:hover {
+  background: var(--color-hover);
+}
+
+.window__btn--close:hover {
+  background: var(--color-danger);
+  color: #fff;
+}
+
+.window__body {
+  flex: 1;
+  overflow: auto;
+  background: var(--color-surface);
+}
+
+.window__resize {
+  position: absolute;
+  z-index: 5;
+}
+
+.window__resize--n {
+  top: -4px;
+  left: 0;
+  right: 0;
+  height: 8px;
+  cursor: ns-resize;
+}
+
+.window__resize--s {
+  bottom: -4px;
+  left: 0;
+  right: 0;
+  height: 8px;
+  cursor: ns-resize;
+}
+
+.window__resize--e {
+  right: -4px;
+  top: 0;
+  bottom: 0;
+  width: 8px;
+  cursor: ew-resize;
+}
+
+.window__resize--w {
+  left: -4px;
+  top: 0;
+  bottom: 0;
+  width: 8px;
+  cursor: ew-resize;
+}
+
+.window__resize--ne {
+  top: -4px;
+  right: -4px;
+  width: 12px;
+  height: 12px;
+  cursor: nesw-resize;
+}
+
+.window__resize--nw {
+  top: -4px;
+  left: -4px;
+  width: 12px;
+  height: 12px;
+  cursor: nwse-resize;
+}
+
+.window__resize--se {
+  bottom: -4px;
+  right: -4px;
+  width: 12px;
+  height: 12px;
+  cursor: nwse-resize;
+}
+
+.window__resize--sw {
+  bottom: -4px;
+  left: -4px;
+  width: 12px;
+  height: 12px;
+  cursor: nesw-resize;
+}
+
+body.is-resizing {
+  user-select: none;
+}
