@@ -1,4 +1,5 @@
 import { useRef, useLayoutEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import * as Icons from "lucide-react";
 import type { ContextMenuItem } from "../../types";
 import { cx } from "../../lib/helpers";
@@ -26,7 +27,7 @@ export function ContextMenu({ x, y, items, onClose }: ContextMenuProps) {
     setPos({ left, top });
   }, [x, y]);
 
-  return (
+  return createPortal(
     <div
       className="ctx-overlay"
       onClick={onClose}
@@ -40,7 +41,7 @@ export function ContextMenu({ x, y, items, onClose }: ContextMenuProps) {
       >
         {items.map((item, i) => {
           const ItemIcon = item.icon
-            ? (Icons as Record<string, Icons.LucideIcon>)[item.icon] ?? null
+            ? (Icons as unknown as Record<string, Icons.LucideIcon>)[item.icon] ?? null
             : null;
           return (
             <li key={i}>
@@ -56,6 +57,7 @@ export function ContextMenu({ x, y, items, onClose }: ContextMenuProps) {
           );
         })}
       </ul>
-    </div>
+    </div>,
+    document.body,
   );
 }
